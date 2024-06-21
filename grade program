@@ -1,0 +1,27 @@
+# Load necessary libraries
+library(ggplot2)
+library(vcd)
+
+# Create the data frame
+data <- data.frame(
+  SCHOOL = c("A", "A", "A", "B", "B", "B", "C", "C", "C", "D", "D", "D"),
+  GRADE_LEVEL = c("Grade 1", "Grade 2", "Grade 3", "Grade 1", "Grade 2", "Grade 3", "Grade 1", "Grade 2", "Grade 3", "Grade 1", "Grade 2", "Grade 3"),
+  NUMBER_OF_STUDENTS = c(25, 30, 20, 22, 28, 18, 20, 25, 15, 28, 32, 24)
+)
+
+# 1. Draw the Mosaic Plot
+mosaic_data <- xtabs(NUMBER_OF_STUDENTS ~ SCHOOL + GRADE_LEVEL, data)
+mosaic(mosaic_data, main = "Mosaic Plot of Number of Students by School and Grade Level")
+
+# 2. Draw the Histogram Plot
+ggplot(data, aes(x = NUMBER_OF_STUDENTS)) +
+  geom_histogram(binwidth = 5, fill = "skyblue", color = "black") +
+  labs(title = "Histogram of Number of Students", x = "Number of Students", y = "Frequency") +
+  theme_minimal()
+
+# 3. Draw the Scatter Plot
+ggplot(data, aes(x = GRADE_LEVEL, y = NUMBER_OF_STUDENTS, color = SCHOOL)) +
+  geom_point(size = 3) +
+  labs(title = "Scatter Plot of Number of Students by Grade Level and School", x = "Grade Level", y = "Number of Students") +
+  theme_minimal()
+
