@@ -1,0 +1,48 @@
+# Load necessary libraries
+library(ggplot2)
+library(reshape2)
+library(dplyr)
+
+# Create the data frame
+data <- data.frame(
+  Date = as.Date(c("2024-01-01", "2024-01-02", "2024-01-03", "2024-01-04", "2024-01-05", "2024-01-06")),
+  StationA_Temperature = c(25.0, 24.5, 26.2, 23.8, 25.5, 23.0),
+  StationA_Precipitation = c(0.1, 0.0, 0.3, 0.2, 0.1, 0.4),
+  StationB_Temperature = c(23.5, 22.8, 25.0, 22.5, 24.5, 21.8),
+  StationB_Precipitation = c(0.2, 0.3, 0.1, 0.0, 0.4, 0.2)
+)
+# Melt the data for ggplot
+data_melt <- melt(data, id.vars = "Date")
+
+# Create the time series plot
+ggplot(data_melt, aes(x = Date, y = value, color = variable, group = variable)) +
+  geom_line() +
+  theme_minimal() +
+  labs(title = "Time Series Plot of Temperature and Precipitation",
+       x = "Date", y = "Value") +
+  scale_color_manual(values = c("StationA_Temperature" = "blue", "StationA_Precipitation" = "lightblue",
+                                "StationB_Temperature" = "red", "StationB_Precipitation" = "pink")) +
+  theme(legend.title = element_blank())
+# Create the line plot for temperatures
+ggplot(data, aes(x = Date)) +
+  geom_line(aes(y = StationA_Temperature, color = "Station A Temperature"), size = 1) +
+  geom_line(aes(y = StationB_Temperature, color = "Station B Temperature"), size = 1) +
+  theme_minimal() +
+  labs(title = "Line Plot of Temperatures",
+       x = "Date", y = "Temperature") +
+  scale_color_manual(values = c("Station A Temperature" = "blue", "Station B Temperature" = "red")) +
+  theme(legend.title = element_blank())
+# Reshape data for stacked bar plot
+data_stack <- melt(data, id.vars = "Date", measure.vars = c("StationA_Temperature", "StationB_Temperature",
+                                                            "StationA_Precipitation", "StationB_Precipitation"))
+
+# Create the stacked bar plot
+ggplot(data_stack, aes(x = Date, y = value, fill = variable)) +
+  geom_bar(stat = "identity", position = "stack") +
+  theme_minimal() +
+  labs(title = "Stacked Bar Plot of Temperature and Precipitation",
+       x = "Date", y = "Value") +
+  scale_fill_manual(values = c("StationA_Temperature" = "blue", "StationA_Precipitation" = "lightblue",
+                               "StationB_Temperature" = "red", "StationB_Precipitation" = "pink")) +
+  theme(legend.title = element_blank())
+
