@@ -1,0 +1,43 @@
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+
+# Create the data frame
+data <- data.frame(
+  Year = c(2019, 2020, 2022, 2023, 2024),
+  Browser = c("Chrome", "Chrome", "Chrome", "Chrome", "Chrome"),
+  Users = c(22.7, 25.8, 28.7, 30.5, 35.2) * 10^6  # Convert million to actual users
+)
+# Aggregate users by browser for a specific year (e.g., 2024)
+pie_data <- data %>%
+  filter(Year == 2024)
+
+# Plot pie chart
+pie_chart <- ggplot(pie_data, aes(x = "", y = Users, fill = Browser)) +
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  labs(title = "Pie Chart of Internet Users by Browser (2024)")
+
+# Display the pie chart
+print(pie_chart)
+# Create the mosaic plot
+mosaic_plot <- ggplot(data, aes(x = factor(Year), y = Users, fill = Browser)) +
+  geom_tile(stat = "identity") +
+  scale_fill_manual(values = c("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd")) +  # Set custom colors
+  theme_minimal() +
+  labs(title = "Mosaic Plot of Internet Users by Year and Browser",
+       x = "Year", y = "Users")
+
+# Display the mosaic plot
+print(mosaic_plot)
+# Scatter plot with trend lines for each browser
+scatter_plot <- ggplot(data, aes(x = Year, y = Users, color = Browser)) +
+  geom_point(size = 3) +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_minimal() +
+  labs(title = "Scatter Plot of Internet Users Over Years",
+       x = "Year", y = "Users")
+
+# Display the scatter plot
+print(scatter_plot)
