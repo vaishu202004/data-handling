@@ -1,0 +1,40 @@
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# Create the data frame
+data <- data.frame(
+  Year = c(2019, 2020, 2022, 2023, 2024),
+  Job_Sector = c("IT", "Government Job", "Customer care", "Bank", "Games"),
+  Job_Seekers_Rate = c(95, 97, 98, 82, 74),
+  Selection_Rate = c(25, 12, 45, 20, 35)
+)
+# Pie plot for job seekers' data
+pie_plot <- ggplot(data, aes(x = "", y = Job_Seekers_Rate, fill = Job_Sector)) +
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  labs(title = "Pie Chart of Job Seekers' Rate by Job Sector")
+
+# Display the pie plot
+print(pie_plot)
+# Mosaic plot for job sectors over years
+mosaic_plot <- ggplot(data, aes(x = factor(Year), y = Job_Seekers_Rate, fill = Job_Sector)) +
+  geom_tile(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Mosaic Plot of Job Seekers' Rate by Year and Job Sector",
+       x = "Year", y = "Job Seekers Rate")
+
+# Display the mosaic plot
+print(mosaic_plot)
+# Funnel plot for selection rates
+funnel_plot <- ggplot(data, aes(x = Job_Sector, y = Selection_Rate, fill = Job_Sector)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  theme_minimal() +
+  labs(title = "Funnel Plot of Selection Rate by Job Sector",
+       x = "Job Sector", y = "Selection Rate")
+
+# Display the funnel plot
+print(funnel_plot)
