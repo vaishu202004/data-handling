@@ -1,0 +1,64 @@
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+library(reshape2)
+library(vcd)
+
+# Data
+data <- data.frame(
+  ID = c(1, 2, 3, 4, 5),
+  Variable1 = c(0, 1, 0, 1, 0),
+  Variable2 = c(1, 0, 1, 1, 0),
+  Variable3 = c(0, 1, 1, 0, 0)
+)
+
+# 1. Create a bar plot showing the count of each value (0 or 1) for Variable1
+ggplot(data, aes(x = as.factor(Variable1))) +
+  geom_bar(fill = "skyblue", color = "black") +
+  ggtitle("Bar Plot of Variable1 Values") +
+  xlab("Variable1") +
+  ylab("Count") +
+  scale_x_discrete(labels = c("0", "1")) +
+  theme_minimal()
+
+# 2. Generate a stacked bar plot of Variable1, Variable2, and Variable3
+data_melted <- melt(data, id.vars = "ID")
+ggplot(data_melted, aes(x = variable, fill = as.factor(value))) +
+  geom_bar(position = "stack") +
+  ggtitle("Stacked Bar Plot of Variables") +
+  xlab("Variable") +
+  ylab("Count") +
+  scale_fill_manual(values = c("skyblue", "orange"), labels = c("0", "1"), name = "Value") +
+  theme_minimal()
+
+# 3. Plot a pie chart representing the proportion of 0s and 1s in Variable2
+variable2_counts <- data %>%
+  count(Variable2) %>%
+  mutate(prop = n / sum(n) * 100,
+         ypos = cumsum(prop) - 0.5 * prop)
+
+ggplot(variable2_counts, aes(x = "", y = prop, fill = as.factor(Variable2))) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y") +
+  geom_text(aes(y = ypos, label = scales::percent(prop/100)), color = "white") +
+  ggtitle("Pie Chart of Variable2 Values") +
+  theme_void() +
+  scale_fill_manual(values = c("skyblue", "orange"), labels = c("0", "1"), name = "Variable2")
+
+# 4. Create a mosaic plot to visualize the association between Variable1 and Variable2
+mosaic_data <- data %>%
+  select(Variable1, Variable2) %>%
+  table()
+mosaicplot(mosaic_data, main = "Mosaic Plot of Variable1 and Variable2", color = TRUE)
+
+# 5. Plot a bar chart showing the frequency of each combination of values in Variable1 and Variable2
+comb_counts <- data %>%
+  count(Variable1, Variable2)
+
+ggplot(comb_counts, aes(x = interaction(Variable1, Variable2), y = n)) +
+  geom_bar(stat = "identity", fill = "lightgreen", color = "black") +
+  ggtitle("Bar Chart of Combinations of Variable1 and Variable2") +
+  xlab("Combinations of Variable1 and Variable2") +
+  ylab("Frequency") +
+  scale_x_discrete(labels = c("0-0", "0-1", "1-0", "1-1")) +
+  theme_minimal()
