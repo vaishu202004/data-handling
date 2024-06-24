@@ -1,0 +1,50 @@
+data <- data.frame(
+  ParentCategory = c("A", "A", "B", "B", "C"),
+  Subcategory = c("A1", "A2", "B1", "B2", "C1"),
+  Value = c(10, 15, 20, 25, 12)
+)
+
+# 1. Create a dendrogram to visualize the hierarchical structure
+hc <- hclust(dist(data$Value), method = "complete")
+plot(hc, labels = paste(data$ParentCategory, data$Subcategory, sep = "-"), main = "Dendrogram of Hierarchical Data")
+
+# 2. Generate a treemap of Parent Category and Subcategory based on Value
+treemap(data,
+        index = c("ParentCategory", "Subcategory"),
+        vSize = "Value",
+        title = "Treemap of Parent Category and Subcategory")
+
+# 3. Plot a sunburst chart to show the distribution of values across categories
+# Prepare data for sunburst plot
+sunburst_data <- data %>%
+  mutate(path = paste(ParentCategory, Subcategory, sep = "-"))
+
+# Create a sunburst plot
+ggplot(sunburst_data, aes(x = "", y = Value, fill = path)) +
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar(theta = "y") +
+  theme_void() +
+  labs(title = "Sunburst Chart of Hierarchical Data")
+
+# 4. Create a nested bar plot of Parent Category and Subcategory
+ggplot(data, aes(x = ParentCategory, y = Value, fill = Subcategory)) +
+  geom_bar(stat = "identity", position = position_stack(reverse = TRUE)) +
+  labs(title = "Nested Bar Plot of Parent Category and Subcategory", x = "Parent Category", y = "Value") +
+  theme_minimal()
+
+# 5. Plot a hierarchical edge bundling plot to visualize connections between Parent Category and Subcategory
+# Create a graph from the hierarchical data
+edges <- data.frame(
+  from = data$ParentCategory,
+  to = data$Subcategory
+)
+
+g <- graph_from_data_frame(edges)
+
+# Create the plot
+ggraph(g, layout = 'dendrogram', circular = TRUE) +
+  geom_edge_link(aes(edge_alpha = 0.8)) +
+  geom_node_point(size = 3, aes(color = name)) +
+  geom_node_text(aes(label = name, filter = leaf, angle = 90, hjust = 1), size = 3) +
+  theme_void() +
+  labs(title = "Hierarchical Edge Bundling Plot of Parent Category and Subcategory")
