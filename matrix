@@ -1,0 +1,57 @@
+# Load necessary libraries
+install.packages("GGally")
+#install.packages("plotly")
+#install.packages("reshape2")
+install.packages("ggparallel")
+install.packages("fmsb")
+library(ggplot2)
+library(GGally)
+library(plotly)
+library(reshape2)
+library(ggparallel)
+library(fmsb)
+
+# Create a data frame with the given data
+data_multi <- data.frame(
+  ID = c(1, 2, 3, 4, 5),
+  X1 = c(5, 7, 6, 8, 4),
+  X2 = c(10, 12, 11, 9, 13),
+  X3 = c(15, 14, 13, 16, 17)
+)
+
+# Pairwise scatter plot matrix of X1, X2, X3
+ggpairs(data_multi[, -1], title = "Pairwise Scatter Plot Matrix")
+
+# 3D scatter plot of X1, X2, and X3
+plot_ly(data_multi, x = ~X1, y = ~X2, z = ~X3, type = "scatter3d", mode = "markers") %>%
+  layout(title = "3D Scatter Plot of X1, X2, and X3",
+         scene = list(xaxis = list(title = 'X1'),
+                      yaxis = list(title = 'X2'),
+                      zaxis = list(title = 'X3')))
+
+# Parallel coordinates plot of X1, X2, and X3
+ggparallel(list('X1', 'X2', 'X3'), data = data_multi, title = "Parallel Coordinates Plot")
+
+# Radar chart to compare values of X1, X2, and X3 for ID 1
+data_radar <- data.frame(
+  row.names = c("Min", "Max", "ID1"),
+  X1 = c(min(data_multi$X1), max(data_multi$X1), data_multi$X1[1]),
+  X2 = c(min(data_multi$X2), max(data_multi$X2), data_multi$X2[1]),
+  X3 = c(min(data_multi$X3), max(data_multi$X3), data_multi$X3[1])
+)
+
+radarchart(data_radar, axistype = 1, pcol = "blue", pfcol = "lightblue", plwd = 2,
+           title = "Radar Chart for ID 1")
+
+# Heatmap showing correlations between X1, X2, and X3
+cor_data <- cor(data_multi[, -1])
+melted_cor_data <- melt(cor_data)
+
+ggplot(data = melted_cor_data, aes(x = Var1, y = Var2, fill = value)) +
+  geom_tile() +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+                       midpoint = 0, limit = c(-1,1), space = "Lab", 
+                       name="Correlation") +
+  geom_text(aes(Var1, Var2, label = round(value, 2)), color = "black", size = 4) +
+  theme_minimal() + 
+  ggtitle("Heatmap of Correlations Between X1, X2, and X3")
