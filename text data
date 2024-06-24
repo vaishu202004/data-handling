@@ -1,0 +1,55 @@
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+library(wordcloud)
+library(scales)
+
+# Data
+data <- data.frame(
+  Word = c("Apple", "Orange", "Banana", "Grape", "Cherry"),
+  Frequency = c(15, 10, 8, 12, 5)
+)
+
+# 1. Create a word cloud based on Word frequencies
+set.seed(123) # for reproducibility
+wordcloud(words = data$Word, freq = data$Frequency, min.freq = 1, 
+          scale = c(3, 0.5), colors = brewer.pal(8, "Dark2"))
+
+# 2. Generate a bar plot of the top 5 most frequent words
+ggplot(data, aes(x = reorder(Word, -Frequency), y = Frequency)) +
+  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
+  ggtitle("Bar Plot of Top 5 Most Frequent Words") +
+  xlab("Word") +
+  ylab("Frequency") +
+  theme_minimal()
+
+# 3. Plot a stacked bar chart showing Word frequencies
+# Since there is only one category, a stacked bar chart is not appropriate. 
+# Instead, we'll use a simple bar chart with different colors for each bar.
+ggplot(data, aes(x = reorder(Word, -Frequency), y = Frequency, fill = Word)) +
+  geom_bar(stat = "identity") +
+  ggtitle("Stacked Bar Chart of Word Frequencies") +
+  xlab("Word") +
+  ylab("Frequency") +
+  theme_minimal()
+
+# 4. Create a pie chart representing the distribution of Word frequencies
+data <- data %>%
+  arrange(desc(Frequency)) %>%
+  mutate(prop = Frequency / sum(Frequency) * 100,
+         ypos = cumsum(prop) - 0.5 * prop)
+
+ggplot(data, aes(x = "", y = prop, fill = Word)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y") +
+  geom_text(aes(y = ypos, label = percent(prop/100)), color = "white") +
+  ggtitle("Pie Chart of Word Frequencies") +
+  theme_void()
+
+# 5. Plot a histogram of Frequency
+ggplot(data, aes(x = Frequency)) +
+  geom_histogram(binwidth = 1, fill = "lightgreen", color = "black") +
+  ggtitle("Histogram of Frequencies") +
+  xlab("Frequency") +
+  ylab("Count") +
+  theme_minimal()
