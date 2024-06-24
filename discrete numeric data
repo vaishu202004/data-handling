@@ -1,0 +1,52 @@
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+
+# Data
+data <- data.frame(
+  ID = c(1, 2, 3, 4, 5),
+  Score = c(85, 92, 78, 88, 90)
+)
+
+# 1. Create a histogram of Score
+ggplot(data, aes(x = Score)) +
+  geom_histogram(binwidth = 5, fill = "skyblue", color = "black") +
+  ggtitle("Histogram of Scores") +
+  xlab("Score") +
+  ylab("Frequency") +
+  theme_minimal()
+
+# 2. Generate a box plot of Score
+ggplot(data, aes(x = "", y = Score)) +
+  geom_boxplot(fill = "lightgreen") +
+  ggtitle("Box Plot of Scores") +
+  xlab("") +
+  ylab("Score") +
+  theme_minimal()
+
+# 3. Plot a bar chart showing the count of scores in different ranges (e.g., 0-50, 51-100)
+data <- data %>%
+  mutate(Score_Range = cut(Score, breaks = c(0, 50, 100), labels = c("0-50", "51-100"), right = FALSE))
+
+ggplot(data, aes(x = Score_Range)) +
+  geom_bar(fill = "orange", color = "black") +
+  ggtitle("Bar Chart of Score Ranges") +
+  xlab("Score Range") +
+  ylab("Count") +
+  theme_minimal()
+
+# 4. Create a density plot of Score
+ggplot(data, aes(x = Score)) +
+  geom_density(fill = "purple", alpha = 0.5) +
+  ggtitle("Density Plot of Scores") +
+  xlab("Score") +
+  ylab("Density") +
+  theme_minimal()
+
+# 5. Plot a violin plot of Score
+ggplot(data, aes(x = "", y = Score)) +
+  geom_violin(fill = "lightblue") +
+  ggtitle("Violin Plot of Scores") +
+  xlab("") +
+  ylab("Score") +
+  theme_minimal()
