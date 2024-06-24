@@ -1,0 +1,68 @@
+Load necessary libraries
+library(ggplot2)
+library(dplyr)
+
+# Data
+data <- data.frame(
+  ID = c(1, 2, 3, 4, 5),
+  Rating = factor(c("Good", "Excellent", "Fair", "Poor", "Good"), levels = c("Poor", "Fair", "Good", "Excellent"), ordered = TRUE)
+)
+
+# 1. Create a bar plot showing the count of each Rating category
+ggplot(data, aes(x = Rating)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  ggtitle("Bar Plot of Rating Categories") +
+  xlab("Rating") +
+  ylab("Count") +
+  theme_minimal()
+
+# 2. Generate a stacked bar plot of Rating over IDs
+data_long <- data %>%
+  mutate(ID = as.factor(ID))
+
+ggplot(data_long, aes(x = ID, fill = Rating)) +
+  geom_bar(position = "stack") +
+  ggtitle("Stacked Bar Plot of Ratings over IDs") +
+  xlab("ID") +
+  ylab("Count") +
+  theme_minimal()
+
+# 3. Plot a pie chart representing the distribution of Ratings
+rating_counts <- data %>%
+  count(Rating) %>%
+  mutate(prop = n / sum(n) * 100,
+         ypos = cumsum(prop) - 0.5 * prop)
+
+ggplot(rating_counts, aes(x = "", y = prop, fill = Rating)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y") +
+  geom_text(aes(y = ypos, label = scales::percent(prop/100)), color = "white") +
+  ggtitle("Pie Chart of Rating Distribution") +
+  theme_void() +
+  scale_fill_manual(values = c("red", "yellow", "green", "blue"), name = "Rating")
+
+# 4. Create a lollipop plot showing the average Rating
+# Convert Rating to numeric values for plotting purposes
+data$Rating_Num <- as.numeric(data$Rating)
+
+# Average rating calculation
+avg_rating <- data %>%
+  summarise(Average_Rating = mean(Rating_Num))
+
+ggplot(avg_rating, aes(x = 1, y = Average_Rating)) +
+  geom_segment(aes(x = 1, xend = 1, y = 0, yend = Average_Rating), color = "skyblue") +
+  geom_point(size = 5, color = "orange") +
+  ggtitle("Lollipop Plot of Average Rating") +
+  xlab("") +
+  ylab("Average Rating") +
+  scale_y_continuous(breaks = 1:4, labels = c("Poor", "Fair", "Good", "Excellent")) +
+  theme_minimal() +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+
+# 5. Plot a bar chart showing the frequency of each Rating category (similar to 1 but repeated for clarity)
+ggplot(data, aes(x = Rating)) +
+  geom_bar(fill = "lightgreen", color = "black") +
+  ggtitle("Frequency of Rating Categories") +
+  xlab("Rating") +
+  ylab("Count") +
+  theme_minimal()
