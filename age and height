@@ -1,0 +1,51 @@
+# Sample dataset
+data <- data.frame(
+  ID = 1:20,
+  Age = c(23, 45, 31, 35, 52, 27, 43, 39, 22, 30, 41, 36, 29, 48, 50, 38, 25, 33, 40, 34),
+  Weight = c(68, 82, 70, 75, 90, 60, 80, 85, 65, 72, 77, 74, 69, 88, 92, 79, 66, 73, 76, 78),
+  Height = c(172, 165, 170, 168, 180, 160, 175, 177, 169, 171, 173, 170, 167, 182, 185, 176, 162, 174, 178, 175)
+)
+# Load necessary library
+library(ggplot2)
+
+# Scatter plot
+scatter_plot <- ggplot(data, aes(x = Age, y = Weight)) +
+  geom_point(color = "blue", size = 3) +
+  theme_minimal() +
+  labs(title = "Scatter Plot of Age vs Weight", x = "Age", y = "Weight")
+
+# Display the scatter plot
+print(scatter_plot)
+# Histogram
+histogram <- ggplot(data, aes(x = Height)) +
+  geom_histogram(binwidth = 2, fill = "blue", color = "black", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Histogram of Height", x = "Height", y = "Frequency")
+
+# Display the histogram
+print(histogram)
+# Line chart
+line_chart <- ggplot(data, aes(x = ID, y = Weight)) +
+  geom_line(color = "blue", linewidth = 1) +
+  geom_point(color = "red", linewidth = 2) +
+  theme_minimal() +
+  labs(title = "Line Chart of Weight over IDs", x = "ID", y = "Weight")
+
+# Display the line chart
+print(line_chart)
+# Box plot
+box_plot <- ggplot(data, aes(y = Age)) +
+  geom_boxplot(fill = "blue", color = "black", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Box Plot of Age", y = "Age")
+
+# Display the box plot
+print(box_plot)
+# Density plot
+density_plot <- ggplot(data, aes(x = Height)) +
+  geom_density(fill = "blue", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Density Plot of Height", x = "Height", y = "Density")
+
+# Display the density plot
+print(density_plot)
