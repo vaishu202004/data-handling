@@ -1,0 +1,53 @@
+# Create the data frame
+data <- data.frame(
+  ID = 1:5,
+  Gender = c("Male", "Female", "Male", "Female", "Male"),
+  Education = c("Graduate", "Undergrad", "High School", "Graduate", "Undergrad"),
+  Occupation = c("Engineer", "Teacher", "Doctor", "Lawyer", "Artist")
+)
+# Load necessary library
+library(ggplot2)
+
+# Bar plot for Gender
+bar_plot_gender <- ggplot(data, aes(x = Gender)) +
+  geom_bar(fill = "blue", color = "black", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Count of Each Gender", x = "Gender", y = "Count")
+
+# Display the bar plot
+print(bar_plot_gender)
+# Pie chart for Education levels
+pie_chart_education <- ggplot(data, aes(x = "", fill = Education)) +
+  geom_bar(width = 1) +
+  coord_polar(theta = "y") +
+  theme_void() +
+  labs(title = "Distribution of Education Levels") +
+  theme(legend.title = element_blank())
+
+# Display the pie chart
+print(pie_chart_education)
+# Stacked bar plot for Occupation by Gender
+stacked_bar_plot <- ggplot(data, aes(x = Occupation, fill = Gender)) +
+  geom_bar(position = "stack") +
+  theme_minimal() +
+  labs(title = "Count of Each Occupation by Gender", x = "Occupation", y = "Count")
+
+# Display the stacked bar plot
+print(stacked_bar_plot)
+# Load additional library for mosaic plot
+library(vcd)
+
+# Create a table for Education and Occupation
+mosaic_data <- xtabs(~ Education + Occupation, data = data)
+
+# Create mosaic plot
+mosaic_plot <- mosaic(mosaic_data, shade = TRUE, legend = TRUE)
+print(mosaic_plot)
+# Grouped bar plot for Gender across different Education levels
+grouped_bar_plot <- ggplot(data, aes(x = Education, fill = Gender)) +
+  geom_bar(position = "dodge") +
+  theme_minimal() +
+  labs(title = "Counts of Gender Across Different Education Levels", x = "Education", y = "Count")
+
+# Display the grouped bar plot
+print(grouped_bar_plot)
