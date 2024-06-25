@@ -1,0 +1,57 @@
+library(plotly)
+library(ggplot2)
+library(dplyr)
+
+healthcare_data <- data.frame(
+  Patient = c("A", "B", "C", "D", "E"),
+  Age = c(45, 55, 60, 50, 65),
+  SystolicBP = c(120, 130, 140, 125, 150),
+  DiastolicBP = c(80, 85, 90, 82, 95),
+  CholesterolLevel = c(180, 200, 220, 190, 240)
+)
+
+healthcare_data$MeanBP <- (healthcare_data$SystolicBP + healthcare_data$DiastolicBP) / 2
+
+summary(healthcare_data)
+
+plot_ly(healthcare_data, x = ~MeanBP, y = ~Age, z = ~CholesterolLevel, color = ~Patient, colors = c('#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'), type = 'scatter3d', mode = 'markers') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Mean Blood Pressure (mmHg)'),
+    yaxis = list(title = 'Age (years)'),
+    zaxis = list(title = 'Cholesterol Level (mg/dL)')
+  ))
+
+correlation_matrix <- cor(healthcare_data[, c("Age", "MeanBP", "CholesterolLevel")])
+print(correlation_matrix)
+
+age_seq <- seq(min(healthcare_data$Age), max(healthcare_data$Age), length.out = 50)
+bp_seq <- seq(min(healthcare_data$MeanBP), max(healthcare_data$MeanBP), length.out = 50)
+
+grid <- expand.grid(Age = age_seq, MeanBP = bp_seq)
+
+model <- lm(CholesterolLevel ~ Age + MeanBP, data = healthcare_data)
+grid$CholesterolLevel <- predict(model, newdata = grid)
+
+plot_ly(grid, x = ~MeanBP, y = ~Age, z = ~CholesterolLevel, type = 'surface') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Mean Blood Pressure (mmHg)'),
+    yaxis = list(title = 'Age (years)'),
+    zaxis = list(title = 'Cholesterol Level (mg/dL)')
+  ))
+
+plot_age_vs_cholesterol <- plot_ly(healthcare_data, x = ~Age, y = ~CholesterolLevel, z = ~MeanBP, color = ~Patient, colors = c('#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'), type = 'scatter3d', mode = 'markers') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Age (years)'),
+    yaxis = list(title = 'Cholesterol Level (mg/dL)'),
+    zaxis = list(title = 'Mean Blood Pressure (mmHg)')
+  ))
+
+plot_bp_vs_cholesterol <- plot_ly(healthcare_data, x = ~MeanBP, y = ~CholesterolLevel, z = ~Age, color = ~Patient, colors = c('#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'), type = 'scatter3d', mode = 'markers') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Mean Blood Pressure (mmHg)'),
+    yaxis = list(title = 'Cholesterol Level (mg/dL)'),
+    zaxis = list(title = 'Age (years)')
+  ))
+plot_age_vs_cholesterol
+plot_bp_vs_cholesterol
+
