@@ -1,0 +1,60 @@
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+library(plotly)
+library(tidyr)
+
+# Load Data
+data <- data.frame(
+  CustomerID = 1:30,
+  Age = c(35, 28, 42, 25, 38, 45, 23, 34, 40, 30, 29, 50, 32, 47, 36, 27, 41, 33, 39, 26, 48, 31, 44, 37, 43, 24, 46, 49, 21, 22),
+  Gender = c("Male", "Female", "Male", "Female", "Male", "Female", "Male", "Female", "Male", "Female", "Male", "Female", "Male", "Female", "Male", "Female", "Male", "Female", "Male", "Female", "Male", "Female", "Male", "Female", "Male", "Female", "Male", "Female", "Male", "Female"),
+  PurchaseAmount = c(100, 80, 120, 90, 110, 150, 60, 130, 95, 85, 70, 160, 75, 140, 115, 65, 125, 135, 105, 95, 145, 90, 120, 125, 130, 85, 155, 140, 50, 60),
+  MembershipLevel = c("Gold", "Silver", "Bronze", "Bronze", "Silver", "Gold", "Silver", "Gold", "Bronze", "Silver", "Bronze", "Gold", "Silver", "Bronze", "Gold", "Silver", "Bronze", "Gold", "Silver", "Bronze", "Gold", "Silver", "Bronze", "Gold", "Silver", "Bronze", "Gold", "Silver", "Bronze", "Silver")
+)
+
+# Data Cleaning
+# Check for missing values
+sum(is.na(data))
+
+# Data Processing
+# Convert categorical variables to factors
+data$Gender <- as.factor(data$Gender)
+data$MembershipLevel <- as.factor(data$MembershipLevel)
+
+# EDA Analysis
+summary(data)
+
+# Visualization
+# Create a 3D scatter plot
+plot_ly(data, x = ~Age, y = ~PurchaseAmount, z = ~as.numeric(MembershipLevel), color = ~Gender, colors = c('#1f77b4', '#ff7f0e'), type = 'scatter3d', mode = 'markers') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Age'),
+    yaxis = list(title = 'Purchase Amount'),
+    zaxis = list(title = 'Membership Level')
+  ))
+
+# Visualize age distribution by gender
+ggplot(data, aes(x = Age, fill = Gender)) + 
+  geom_histogram(binwidth = 5, alpha = 0.7, position = "dodge") +
+  labs(title = "Age Distribution by Gender", x = "Age", y = "Count")
+
+# Visualize purchase amount distribution by gender
+ggplot(data, aes(x = PurchaseAmount, fill = Gender)) + 
+  geom_histogram(binwidth = 10, alpha = 0.7, position = "dodge") +
+  labs(title = "Purchase Amount Distribution by Gender", x = "Purchase Amount", y = "Count")
+
+# Visualize purchase amount by membership level
+ggplot(data, aes(x = MembershipLevel, y = PurchaseAmount, fill = MembershipLevel)) + 
+  geom_boxplot() +
+  labs(title = "Purchase Amount by Membership Level", x = "Membership Level", y = "Purchase Amount")
+
+# Visualize age vs purchase amount
+ggplot(data, aes(x = Age, y = PurchaseAmount, color = MembershipLevel)) + 
+  geom_point(size = 3) +
+  labs(title = "Age vs Purchase Amount", x = "Age", y = "Purchase Amount")
+
+# Create more visualizations as needed
+# Scatter plots, histograms, boxplots, and more
+# ...
+
