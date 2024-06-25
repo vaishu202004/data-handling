@@ -1,0 +1,54 @@
+library(plotly)
+library(ggplot2)
+library(dplyr)
+
+product_data <- data.frame(
+  Product = c("A", "B", "C", "D", "E"),
+  Price = c(50, 70, 60, 45, 55),
+  UnitsSold = c(1000, 800, 1200, 1500, 900),
+  CustomerRatings = c(4.2, 4.0, 4.5, 3.8, 4.3)
+)
+
+summary(product_data)
+
+
+plot_ly(product_data, x = ~UnitsSold, y = ~CustomerRatings, z = ~Price, color = ~Product, colors = c('#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'), type = 'scatter3d', mode = 'markers') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Units Sold'),
+    yaxis = list(title = 'Customer Ratings'),
+    zaxis = list(title = 'Price ($)')
+  ))
+
+
+correlation_matrix <- cor(product_data[, c("Price", "UnitsSold", "CustomerRatings")])
+print(correlation_matrix)
+
+units_sold_seq <- seq(min(product_data$UnitsSold), max(product_data$UnitsSold), length.out = 50)
+price_seq <- seq(min(product_data$Price), max(product_data$Price), length.out = 50)
+
+grid <- expand.grid(UnitsSold = units_sold_seq, Price = price_seq)
+
+model <- lm(CustomerRatings ~ UnitsSold + Price, data = product_data)
+grid$CustomerRatings <- predict(model, newdata = grid)
+plot_ly(grid, x = ~UnitsSold, y = ~CustomerRatings, z = ~Price, type = 'surface') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Units Sold'),
+    yaxis = list(title = 'Customer Ratings'),
+    zaxis = list(title = 'Price ($)')
+  ))
+plot_units_vs_ratings <- plot_ly(product_data, x = ~UnitsSold, y = ~CustomerRatings, z = ~Price, color = ~Product, colors = c('#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'), type = 'scatter3d', mode = 'markers') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Units Sold'),
+    yaxis = list(title = 'Customer Ratings'),
+    zaxis = list(title = 'Price ($)')
+  ))
+
+plot_price_vs_ratings <- plot_ly(product_data, x = ~Price, y = ~CustomerRatings, z = ~UnitsSold, color = ~Product, colors = c('#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'), type = 'scatter3d', mode = 'markers') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Price ($)'),
+    yaxis = list(title = 'Customer Ratings'),
+    zaxis = list(title = 'Units Sold')
+  ))
+plot_units_vs_ratings
+plot_price_vs_ratings
+
