@@ -1,0 +1,52 @@
+
+library(plotly)
+library(ggplot2)
+library(dplyr)
+
+sales_data <- data.frame(
+  Region = c("North", "South", "East", "West", "Central"),
+  Sales = c(250, 300, 280, 270, 260),
+  AdvertisingCost = c(1000, 1200, 1100, 1050, 1150),
+  CustomerSatisfaction = c(8, 7, 9, 7.5, 8.5)
+)
+
+
+summary(sales_data)
+plot_ly(sales_data, x = ~AdvertisingCost, y = ~Sales, z = ~CustomerSatisfaction, color = ~Region, colors = c('#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'), type = 'scatter3d', mode = 'markers') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Advertising Cost ($)'),
+    yaxis = list(title = 'Sales ($ thousands)'),
+    zaxis = list(title = 'Customer Satisfaction')
+  ))
+
+
+correlation_matrix <- cor(sales_data[, c("Sales", "AdvertisingCost", "CustomerSatisfaction")])
+print(correlation_matrix)
+sales_seq <- seq(min(sales_data$Sales), max(sales_data$Sales), length.out = 50)
+ad_cost_seq <- seq(min(sales_data$AdvertisingCost), max(sales_data$AdvertisingCost), length.out = 50)
+
+grid <- expand.grid(Sales = sales_seq, AdvertisingCost = ad_cost_seq)
+grid$CustomerSatisfaction <- with(sales_data, 
+                                  approx(Sales, CustomerSatisfaction, grid$Sales)$y * 
+                                    approx(AdvertisingCost, CustomerSatisfaction, grid$AdvertisingCost)$y / mean(CustomerSatisfaction))
+
+plot_ly(grid, x = ~AdvertisingCost, y = ~Sales, z = ~CustomerSatisfaction, type = 'surface') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Advertising Cost ($)'),
+    yaxis = list(title = 'Sales ($ thousands)'),
+    zaxis = list(title = 'Customer Satisfaction')
+  ))
+
+plot_sales_vs_satisfaction <- plot_ly(sales_data, x = ~Sales, y = ~CustomerSatisfaction, z = ~AdvertisingCost, color = ~Region, colors = c('#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'), type = 'scatter3d', mode = 'markers') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Sales ($ thousands)'),
+    yaxis = list(title = 'Customer Satisfaction'),
+    zaxis = list(title = 'Advertising Cost ($)')
+  ))
+
+plot_ad_cost_vs_satisfaction <- plot_ly(sales_data, x = ~AdvertisingCost, y = ~CustomerSatisfaction, z = ~Sales, color = ~Region, colors = c('#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'), type = 'scatter3d', mode = 'markers') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Advertising Cost ($)'),
+    yaxis = list(title = 'Customer Satisfaction'),
+    zaxis = list(title = 'Sales ($ thousands)')
+  ))
