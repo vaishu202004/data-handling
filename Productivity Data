@@ -1,0 +1,53 @@
+library(plotly)
+library(ggplot2)
+library(dplyr)
+
+productivity_data <- data.frame(
+  Employee = c("A", "B", "C", "D", "E"),
+  HoursWorked = c(40, 35, 45, 38, 42),
+  TasksCompleted = c(10, 8, 12, 9, 11),
+  Efficiency = c(80, 75, 85, 78, 82)
+)
+
+summary(productivity_data)
+plot_ly(productivity_data, x = ~TasksCompleted, y = ~Efficiency, z = ~HoursWorked, color = ~Employee, colors = c('#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'), type = 'scatter3d', mode = 'markers') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Tasks Completed'),
+    yaxis = list(title = 'Efficiency (%)'),
+    zaxis = list(title = 'Hours Worked')
+  ))
+
+correlation_matrix <- cor(productivity_data[, c("HoursWorked", "TasksCompleted", "Efficiency")])
+print(correlation_matrix)
+tasks_seq <- seq(min(productivity_data$TasksCompleted), max(productivity_data$TasksCompleted), length.out = 50)
+hours_seq <- seq(min(productivity_data$HoursWorked), max(productivity_data$HoursWorked), length.out = 50)
+
+grid <- expand.grid(TasksCompleted = tasks_seq, HoursWorked = hours_seq)
+
+model <- lm(Efficiency ~ TasksCompleted + HoursWorked, data = productivity_data)
+grid$Efficiency <- predict(model, newdata = grid)
+
+plot_ly(grid, x = ~TasksCompleted, y = ~Efficiency, z = ~HoursWorked, type = 'surface') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Tasks Completed'),
+    yaxis = list(title = 'Efficiency (%)'),
+    zaxis = list(title = 'Hours Worked')
+  ))
+
+plot_tasks_vs_efficiency <- plot_ly(productivity_data, x = ~TasksCompleted, y = ~Efficiency, z = ~HoursWorked, color = ~Employee, colors = c('#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'), type = 'scatter3d', mode = 'markers') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Tasks Completed'),
+    yaxis = list(title = 'Efficiency (%)'),
+    zaxis = list(title = 'Hours Worked')
+  ))
+
+plot_hours_vs_efficiency <- plot_ly(productivity_data, x = ~HoursWorked, y = ~Efficiency, z = ~TasksCompleted, color = ~Employee, colors = c('#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'), type = 'scatter3d', mode = 'markers') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Hours Worked'),
+    yaxis = list(title = 'Efficiency (%)'),
+    zaxis = list(title = 'Tasks Completed')
+  ))
+
+# Display the plots
+plot_tasks_vs_efficiency
+plot_hours_vs_efficiency
