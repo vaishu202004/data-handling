@@ -1,0 +1,57 @@
+library(plotly)
+library(ggplot2)
+library(dplyr)
+
+educational_data <- data.frame(
+  Student = c("A", "B", "C", "D", "E"),
+  MathScore = c(85, 72, 90, 78, 88),
+  ReadingScore = c(78, 85, 80, 75, 82),
+  Attendance = c(95, 92, 98, 85, 93)
+)
+
+summary(educational_data)
+
+
+plot_ly(educational_data, x = ~MathScore, y = ~ReadingScore, z = ~Attendance, color = ~Student, colors = c('#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'), type = 'scatter3d', mode = 'markers') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Math Score'),
+    yaxis = list(title = 'Reading Score'),
+    zaxis = list(title = 'Attendance (%)')
+  ))
+
+
+correlation_matrix <- cor(educational_data[, c("MathScore", "ReadingScore", "Attendance")])
+print(correlation_matrix)
+
+math_seq <- seq(min(educational_data$MathScore), max(educational_data$MathScore), length.out = 50)
+attendance_seq <- seq(min(educational_data$Attendance), max(educational_data$Attendance), length.out = 50)
+
+grid <- expand.grid(MathScore = math_seq, Attendance = attendance_seq)
+
+model <- lm(ReadingScore ~ MathScore + Attendance, data = educational_data)
+grid$ReadingScore <- predict(model, newdata = grid)
+
+# Generate the 3D surface plot
+plot_ly(grid, x = ~MathScore, y = ~ReadingScore, z = ~Attendance, type = 'surface') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Math Score'),
+    yaxis = list(title = 'Reading Score'),
+    zaxis = list(title = 'Attendance (%)')
+  ))
+
+plot_math_vs_reading <- plot_ly(educational_data, x = ~MathScore, y = ~ReadingScore, z = ~Attendance, color = ~Student, colors = c('#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'), type = 'scatter3d', mode = 'markers') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Math Score'),
+    yaxis = list(title = 'Reading Score'),
+    zaxis = list(title = 'Attendance (%)')
+  ))
+
+plot_attendance_vs_reading <- plot_ly(educational_data, x = ~Attendance, y = ~ReadingScore, z = ~MathScore, color = ~Student, colors = c('#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'), type = 'scatter3d', mode = 'markers') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Attendance (%)'),
+    yaxis = list(title = 'Reading Score'),
+    zaxis = list(title = 'Math Score')
+  ))
+
+plot_math_vs_reading
+plot_attendance_vs_reading
